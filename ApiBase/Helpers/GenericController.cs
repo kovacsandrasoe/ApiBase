@@ -36,6 +36,7 @@ namespace ApiBase.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize]
         public JsonResult GetMyTs()
         {
             var myself = CurrentUserId();
@@ -48,6 +49,7 @@ namespace ApiBase.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [Authorize]
         public JsonResult GetMyT(string id)
         {
             var myself = CurrentUserId();
@@ -55,10 +57,9 @@ namespace ApiBase.Controllers
         }
 
         /// <summary>
-        /// visszaadja minden user összes T-ját (csak adminoknak!)
+        /// visszaadja minden user összes T-ját
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles = "Admin")]
         [HttpPatch]
         public JsonResult GetAllT()
         {
@@ -66,11 +67,10 @@ namespace ApiBase.Controllers
         }
 
         /// <summary>
-        /// visszaadja valamely user konkrét T-ját (csak adminoknak!)
+        /// visszaadja valamely user konkrét T-ját
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Authorize(Roles = "Admin")]
         [HttpPatch("{id}")]
         public JsonResult GetTFromUser(string id)
         {

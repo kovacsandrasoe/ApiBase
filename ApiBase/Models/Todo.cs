@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ApiBase.Models
@@ -24,6 +25,7 @@ namespace ApiBase.Models
         public string OwnerId { get; set; }
 
         [NotMapped]
+        [JsonIgnore]
         public virtual IdentityUser Owner { get; set; }
 
         public Todo()

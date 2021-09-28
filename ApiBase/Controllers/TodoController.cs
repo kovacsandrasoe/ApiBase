@@ -36,6 +36,7 @@ namespace ApiBase.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Authorize]
         public JsonResult GetMyTodos()
         {
             var myself = CurrentUserId();
@@ -49,6 +50,7 @@ namespace ApiBase.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [Authorize]
         public JsonResult GetMyTodo(string id)
         {
             var myself = CurrentUserId();

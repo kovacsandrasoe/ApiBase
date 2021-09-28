@@ -58,53 +58,6 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:ApiBase.Controllers.GenericController`1.GetMyTs">
-            <summary>
-            visszaadja az adott user összes T-jét
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ApiBase.Controllers.GenericController`1.GetMyT(System.String)">
-            <summary>
-            visszaadja az adott user adott id-jű T-jét
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ApiBase.Controllers.GenericController`1.GetAllT">
-            <summary>
-            visszaadja minden user összes T-ját (csak adminoknak!)
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ApiBase.Controllers.GenericController`1.GetTFromUser(System.String)">
-            <summary>
-            visszaadja valamely user konkrét T-ját (csak adminoknak!)
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ApiBase.Controllers.GenericController`1.CreateT(`0)">
-            <summary>
-            T létrehozása
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ApiBase.Controllers.GenericController`1.RemoveT(System.String)">
-            <summary>
-            T törlése id alapján, ha a miénk vagy adminok vagyunk
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ApiBase.Controllers.GenericController`1.UpdateTodo(`0)">
-            <summary>
-            T módosítása, kell neki a teljes új T object a régi id-jával
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
         <member name="M:ApiBase.Controllers.TodoController.GetMyTodos">
             <summary>
             visszaadja az adott user összes todo-ját
@@ -148,6 +101,53 @@
         <member name="M:ApiBase.Controllers.TodoController.UpdateTodo(ApiBase.Models.Todo)">
             <summary>
             Todo módosítása, kell neki a teljes új todo object a régi id-jával
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiBase.Controllers.GenericController`1.GetMyTs">
+            <summary>
+            visszaadja az adott user összes T-jét
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ApiBase.Controllers.GenericController`1.GetMyT(System.String)">
+            <summary>
+            visszaadja az adott user adott id-jű T-jét
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiBase.Controllers.GenericController`1.GetAllT">
+            <summary>
+            visszaadja minden user összes T-ját (csak adminoknak!)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ApiBase.Controllers.GenericController`1.GetTFromUser(System.String)">
+            <summary>
+            visszaadja valamely user konkrét T-ját (csak adminoknak!)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiBase.Controllers.GenericController`1.CreateT(`0)">
+            <summary>
+            T létrehozása
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiBase.Controllers.GenericController`1.RemoveT(System.String)">
+            <summary>
+            T törlése id alapján, ha a miénk vagy adminok vagyunk
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ApiBase.Controllers.GenericController`1.UpdateTodo(`0)">
+            <summary>
+            T módosítása, kell neki a teljes új T object a régi id-jával
             </summary>
             <param name="value"></param>
             <returns></returns>

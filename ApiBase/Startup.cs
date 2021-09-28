@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ApiBase.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace ApiBase
 {
@@ -71,11 +72,13 @@ namespace ApiBase
                 ).AddEntityFrameworkStores<ApiDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthentication(option => {
+            services.AddAuthentication(option =>
+            {
                 option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options => {
+            }).AddJwtBearer(options =>
+            {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = true;
                 options.TokenValidationParameters = new TokenValidationParameters()
@@ -86,7 +89,7 @@ namespace ApiBase
                     ValidIssuer = Configuration["Jwt:Site"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:SigningKey"]))
                 };
-            });
+            });            ;
 
             services.AddSignalR();
 

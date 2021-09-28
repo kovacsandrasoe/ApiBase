@@ -43,7 +43,7 @@ namespace ApiBase.Controllers
             var user = new IdentityUser
             {
                 Email = model.Email,
-                UserName = model.Email,
+                UserName = model.UserName,
                 SecurityStamp = Guid.NewGuid().ToString()
             };
             var result = await _userManager.CreateAsync(user, model.Password);
