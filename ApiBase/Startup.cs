@@ -60,7 +60,7 @@ namespace ApiBase
                             option => option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             }
 
-            services.AddIdentity<IdentityUser, IdentityRole>(
+            services.AddIdentity<AppUser, IdentityRole>(
                     option =>
                     {
                         option.Password.RequireDigit = false;

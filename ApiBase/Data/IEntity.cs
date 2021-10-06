@@ -9,7 +9,7 @@ namespace ApiBase.Data
     {
         string Id { get; set; }
 
-        string OwnerId { get; set; }
+        AppUser Owner { get; set; }
 
         void CopyFrom(T another);
     }

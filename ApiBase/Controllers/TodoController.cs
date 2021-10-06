@@ -18,12 +18,12 @@ namespace ApiBase.Controllers
     [Route("[controller]")]
     public class TodoController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly ApiDbContext _database;
         ILogger<TodoController> _logger;
         private readonly IHubContext<EventHub> _hub;
 
-        public TodoController(UserManager<IdentityUser> userManager, ApiDbContext database, ILogger<TodoController> logger, IHubContext<EventHub> hub)
+        public TodoController(UserManager<AppUser> userManager, ApiDbContext database, ILogger<TodoController> logger, IHubContext<EventHub> hub)
         {
             _userManager = userManager;
             _database = database;
@@ -39,9 +39,9 @@ namespace ApiBase.Controllers
         [Authorize]
         public JsonResult GetMyTodos()
         {
-            var myself = CurrentUserId();
+            var myself = CurrentUser();
 
-            return new JsonResult(_database.Todos.Where(t => t.OwnerId == myself));
+            return new JsonResult(_database.Todos.Where(t => t.Owner.Id == myself.Id));
         }
 
         /// <summary>
@@ -53,8 +53,8 @@ namespace ApiBase.Controllers
         [Authorize]
         public JsonResult GetMyTodo(string id)
         {
-            var myself = CurrentUserId();
-            return new JsonResult(_database.Todos.FirstOrDefault(t => t.OwnerId == myself && t.Id == id));
+            var myself = CurrentUser();
+            return new JsonResult(_database.Todos.FirstOrDefault(t => t.Owner.Id == myself.Id && t.Id == id));
         }
 
         /// <summary>
@@ -89,13 +89,13 @@ namespace ApiBase.Controllers
         [HttpPost]
         public async Task<JsonResult> CreateTodo([FromBody] Todo value)
         {
-            value.OwnerId = CurrentUserId();
+            value.Owner = CurrentUser();
             _database.Todos.Add(value);
             _database.SaveChanges();
 
             await _hub.Clients.All.SendAsync("TodoAdded", value);
 
-            return new JsonResult(Ok(_database.Todos.FirstOrDefault(t => t.Id == value.Id)));
+            return new JsonResult(_database.Todos.FirstOrDefault(t => t.Id == value.Id));
         }
 
         /// <summary>
@@ -107,17 +107,17 @@ namespace ApiBase.Controllers
         [HttpDelete("{id}")]
         public async Task<JsonResult> RemoveTodo(string id)
         {
-            var myself = CurrentUserId();
+            var myself = CurrentUser();
             var myselfRoles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(this.User));
 
             var todoToDelete = _database.Todos.FirstOrDefault(t => t.Id == id);
 
-            if (todoToDelete.OwnerId == myself || myselfRoles.Contains("Admin"))
+            if (todoToDelete.Owner.Id == myself.Id || myselfRoles.Contains("Admin"))
             {
                 _database.Todos.Remove(todoToDelete);
                 _database.SaveChanges();
                 await _hub.Clients.All.SendAsync("TodoRemoved", todoToDelete);
-                return new JsonResult(Ok(todoToDelete));
+                return new JsonResult(todoToDelete);
             }
             else
             {
@@ -135,18 +135,18 @@ namespace ApiBase.Controllers
         [HttpPut]
         public async Task<JsonResult> UpdateTodo([FromBody] Todo value)
         {
-            var myself = CurrentUserId();
+            var myself = CurrentUser();
             var myselfRoles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(this.User));
 
             var todoToUpdate = _database.Todos.FirstOrDefault(t => t.Id == value.Id);
 
-            if (todoToUpdate.OwnerId == myself || myselfRoles.Contains("Admin"))
+            if (todoToUpdate.Owner.Id == myself.Id || myselfRoles.Contains("Admin"))
             {
                 todoToUpdate.Title = value.Title;
                 todoToUpdate.Hours = value.Hours;
                 _database.SaveChanges();
                 await _hub.Clients.All.SendAsync("TodoUpdated", todoToUpdate);
-                return new JsonResult(Ok());
+                return new JsonResult(todoToUpdate);
             }
             else
             {
@@ -159,13 +159,13 @@ namespace ApiBase.Controllers
 
 
         //segédmetódus
-        private string CurrentUserId()
+        private AppUser CurrentUser()
         {
             //ki a jelenlegi user
             var claimsIdentity = this.User.Identity as ClaimsIdentity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var myself = _userManager.Users.FirstOrDefault(t => t.UserName == userId);
-            return myself.Id;
+            return myself;
         }
     }
 }

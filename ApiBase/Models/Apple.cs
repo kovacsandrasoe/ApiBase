@@ -9,13 +9,13 @@ namespace ApiBase.Models
     public class Apple : IEntity<Apple>
     {
         public string Id { get; set; }
-        public string OwnerId { get; set; }
+        public AppUser Owner { get; set; }
 
         public string AppleName { get; set; }
 
         public void CopyFrom(Apple another)
         {
-            OwnerId = another.OwnerId;
+            Owner = another.Owner;
             AppleName = another.AppleName;
             Id = Guid.NewGuid().ToString();
         }

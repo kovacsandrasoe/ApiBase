@@ -17,13 +17,13 @@ namespace ApiBase.Controllers
     [Authorize]
     public class GenericController<T> : ControllerBase where T : class, IEntity<T>
     {
-        protected readonly UserManager<IdentityUser> _userManager;
+        protected readonly UserManager<AppUser> _userManager;
         protected readonly ApiDbContext _database;
         protected ILogger<GenericController<T>> _logger;
         protected readonly IHubContext<EventHub> _hub;
 
 
-        public GenericController(UserManager<IdentityUser> userManager, ApiDbContext database, ILogger<GenericController<T>> logger, IHubContext<EventHub> hub)
+        public GenericController(UserManager<AppUser> userManager, ApiDbContext database, ILogger<GenericController<T>> logger, IHubContext<EventHub> hub)
         {
             _userManager = userManager;
             _database = database;
@@ -39,8 +39,8 @@ namespace ApiBase.Controllers
         [Authorize]
         public JsonResult GetMyTs()
         {
-            var myself = CurrentUserId();
-            return new JsonResult(_database.Set<T>().Where(t => t.OwnerId == myself));
+            var myself = CurrentUser();
+            return new JsonResult(_database.Set<T>().Where(t => t.Owner.Id == myself.Id));
         }
 
         /// <summary>
@@ -52,8 +52,8 @@ namespace ApiBase.Controllers
         [Authorize]
         public JsonResult GetMyT(string id)
         {
-            var myself = CurrentUserId();
-            return new JsonResult(_database.Set<T>().FirstOrDefault(t => t.OwnerId == myself && t.Id == id));
+            var myself = CurrentUser();
+            return new JsonResult(_database.Set<T>().FirstOrDefault(t => t.Owner.Id == myself.Id && t.Id == id));
         }
 
         /// <summary>
@@ -86,13 +86,13 @@ namespace ApiBase.Controllers
         [HttpPost]
         public async Task<JsonResult> CreateT([FromBody] T value)
         {
-            value.OwnerId = CurrentUserId();
+            value.Owner = CurrentUser();
             _database.Set<T>().Add(value);
             _database.SaveChanges();
 
             await _hub.Clients.All.SendAsync(value.GetType().Name + "Added", value);
 
-            return new JsonResult(Ok(_database.Set<T>().FirstOrDefault(t => t.Id == value.Id)));
+            return new JsonResult(_database.Set<T>().FirstOrDefault(t => t.Id == value.Id));
         }
 
         /// <summary>
@@ -104,17 +104,17 @@ namespace ApiBase.Controllers
         [HttpDelete("{id}")]
         public async Task<JsonResult> RemoveT(string id)
         {
-            var myself = CurrentUserId();
+            var myself = CurrentUser();
             var myselfRoles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(this.User));
 
             var tToDelete = _database.Set<T>().FirstOrDefault(t => t.Id == id);
 
-            if (tToDelete.OwnerId == myself || myselfRoles.Contains("Admin"))
+            if (tToDelete.Owner.Id == myself.Id || myselfRoles.Contains("Admin"))
             {
                 _database.Set<T>().Remove(tToDelete);
                 _database.SaveChanges();
                 await _hub.Clients.All.SendAsync(tToDelete.GetType().Name + "Removed", tToDelete);
-                return new JsonResult(Ok(tToDelete));
+                return new JsonResult(tToDelete);
             }
             else
             {
@@ -132,17 +132,17 @@ namespace ApiBase.Controllers
         [HttpPut]
         public async Task<JsonResult> UpdateTodo([FromBody] T value)
         {
-            var myself = CurrentUserId();
+            var myself = CurrentUser();
             var myselfRoles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(this.User));
 
             var tToUpdate = _database.Set<T>().FirstOrDefault(t => t.Id == value.Id);
 
-            if (tToUpdate.OwnerId == myself || myselfRoles.Contains("Admin"))
+            if (tToUpdate.Owner.Id == myself.Id || myselfRoles.Contains("Admin"))
             {
                 tToUpdate.CopyFrom(value);
                 _database.SaveChanges();
                 await _hub.Clients.All.SendAsync(tToUpdate.GetType().Name + "Updated", tToUpdate);
-                return new JsonResult(Ok());
+                return new JsonResult(tToUpdate);
             }
             else
             {
@@ -155,13 +155,13 @@ namespace ApiBase.Controllers
 
 
         //segédmetódus
-        private string CurrentUserId()
+        private AppUser CurrentUser()
         {
             //ki a jelenlegi user
             var claimsIdentity = this.User.Identity as ClaimsIdentity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var myself = _userManager.Users.FirstOrDefault(t => t.UserName == userId);
-            return myself.Id;
+            return myself;
         }
     }
 }

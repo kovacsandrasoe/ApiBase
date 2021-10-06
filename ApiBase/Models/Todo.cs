@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using ApiBase.Data;
+using ApiBase.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,12 +23,8 @@ namespace ApiBase.Models
         [Required]
         public int Hours { get; set; }
 
-        [ForeignKey(nameof(IdentityUser))]
-        public string OwnerId { get; set; }
-
         [NotMapped]
-        [JsonIgnore]
-        public virtual IdentityUser Owner { get; set; }
+        public virtual AppUser Owner { get; set; }
 
         public Todo()
         {

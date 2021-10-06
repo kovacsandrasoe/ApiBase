@@ -15,6 +15,8 @@ namespace ApiBase.Data
         public virtual DbSet<Todo> Todos { get; set; }
         public virtual DbSet<Apple> Apples { get; set; }
 
+        public virtual DbSet<AppUser> AppUsers { get; set; }
+
         public ApiDbContext(DbContextOptions<ApiDbContext> opt) : base(opt)
         {
 
@@ -23,6 +25,7 @@ namespace ApiBase.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
 
 
             builder.Entity<IdentityRole>().HasData(

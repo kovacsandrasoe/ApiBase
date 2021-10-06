@@ -120,13 +120,13 @@
         </member>
         <member name="M:ApiBase.Controllers.GenericController`1.GetAllT">
             <summary>
-            visszaadja minden user összes T-ját (csak adminoknak!)
+            visszaadja minden user összes T-ját
             </summary>
             <returns></returns>
         </member>
         <member name="M:ApiBase.Controllers.GenericController`1.GetTFromUser(System.String)">
             <summary>
-            visszaadja valamely user konkrét T-ját (csak adminoknak!)
+            visszaadja valamely user konkrét T-ját
             </summary>
             <param name="id"></param>
             <returns></returns>

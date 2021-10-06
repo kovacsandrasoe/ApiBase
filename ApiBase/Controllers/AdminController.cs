@@ -1,4 +1,5 @@
-﻿using ApiBase.Services;
+﻿using ApiBase.Data;
+using ApiBase.Services;
 using ApiBase.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,12 +18,12 @@ namespace ApiBase.Controllers
     [Route("[controller]")]
     public class AdminController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
         private readonly IHubContext<EventHub> _hub;
 
-        public AdminController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IHubContext<EventHub> hub)
+        public AdminController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IHubContext<EventHub> hub)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -63,13 +64,13 @@ namespace ApiBase.Controllers
             var user = _userManager.Users.FirstOrDefault(t => t.Id == id);
             if (user != null)
             {
-                return new JsonResult(Ok(new UserViewModel()
+                return new JsonResult(new UserViewModel()
                 {
                     Email = user.Email,
                     Id = user.Id,
                     UserName = user.UserName,
                     Roles = await _userManager.GetRolesAsync(user)
-                }));
+                });
             }
             else
             {
@@ -101,7 +102,7 @@ namespace ApiBase.Controllers
 
                 await _hub.Clients.All.SendAsync("UserToRoleAdded", uvm);
 
-                return new JsonResult(Ok(uvm));
+                return new JsonResult(uvm);
 
 
             }
@@ -135,7 +136,7 @@ namespace ApiBase.Controllers
 
                 await _hub.Clients.All.SendAsync("UserFromRoleDeleted", uvm);
 
-                return new JsonResult(Ok(uvm));
+                return new JsonResult(uvm);
             }
             else
             {
@@ -171,7 +172,7 @@ namespace ApiBase.Controllers
             var role = _roleManager.Roles.FirstOrDefault(t => t.Name == value.Name);
             await _hub.Clients.All.SendAsync("RoleCreated", role);
 
-            return new JsonResult(Ok(role));
+            return new JsonResult(role);
         }
 
 

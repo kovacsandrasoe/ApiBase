@@ -16,7 +16,7 @@ namespace ApiBase.Controllers
     [Route("[controller]")]
     public class AppleController : GenericController<Apple>
     {
-        public AppleController(UserManager<IdentityUser> userManager, ApiDbContext database, ILogger<AppleController> logger, IHubContext<EventHub> hub)
+        public AppleController(UserManager<AppUser> userManager, ApiDbContext database, ILogger<AppleController> logger, IHubContext<EventHub> hub)
             :base(userManager, database, logger, hub)
         {
             

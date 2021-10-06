@@ -14,5 +14,13 @@ namespace ApiBase.ViewModels
         public string Email { get; set; }
 
         public IList<string> Roles { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string PhotoContentType { get; set; }
+
+        public byte[] PhotoData { get; set; }
     }
 }

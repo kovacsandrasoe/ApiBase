@@ -1,4 +1,5 @@
-﻿using ApiBase.Services;
+﻿using ApiBase.Data;
+using ApiBase.Services;
 using ApiBase.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,11 +20,11 @@ namespace ApiBase.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
         private readonly IHubContext<EventHub> _hub;
 
-        public AuthController(UserManager<IdentityUser> userManager, IConfiguration configuration, IHubContext<EventHub> hub)
+        public AuthController(UserManager<AppUser> userManager, IConfiguration configuration, IHubContext<EventHub> hub)
         {
             _userManager = userManager;
             _configuration = configuration;
@@ -40,11 +41,15 @@ namespace ApiBase.Controllers
         {
             var users = _userManager.Users.ToList();
 
-            var user = new IdentityUser
+            var user = new AppUser
             {
                 Email = model.Email,
                 UserName = model.UserName,
-                SecurityStamp = Guid.NewGuid().ToString()
+                SecurityStamp = Guid.NewGuid().ToString(),
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                PhotoContentType = model.PhotoContentType,
+                PhotoData = model.PhotoData
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
@@ -56,16 +61,21 @@ namespace ApiBase.Controllers
                 }
             }
 
-            await _hub.Clients.All.SendAsync("UserAdded", new UserViewModel()
+            var uwm = new UserViewModel()
             {
                 Email = user.Email,
                 UserName = user.UserName,
                 Id = user.Id,
-                Roles = await _userManager.GetRolesAsync(user)
-            }
-            );
+                Roles = await _userManager.GetRolesAsync(user),
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhotoData = user.PhotoData,
+                PhotoContentType = user.PhotoContentType
+            };
 
-            return new JsonResult(Ok(new { Username = user.UserName }));
+            await _hub.Clients.All.SendAsync("UserAdded", uwm);
+
+            return new JsonResult(uwm);
         }
 
         /// <summary>
@@ -106,15 +116,19 @@ namespace ApiBase.Controllers
                     Email = user.Email,
                     UserName = user.UserName,
                     Id = user.Id,
-                    Roles = await _userManager.GetRolesAsync(user)
+                    Roles = await _userManager.GetRolesAsync(user),
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    PhotoData = user.PhotoData,
+                    PhotoContentType = user.PhotoContentType
                 });
 
-                return new JsonResult(Ok(
+                return new JsonResult(
                   new
                   {
                       token = new JwtSecurityTokenHandler().WriteToken(token),
                       expiration = token.ValidTo
-                  }));
+                  });
 
                 
 

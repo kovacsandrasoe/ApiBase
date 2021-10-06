@@ -18,5 +18,16 @@ namespace ApiBase.ViewModels
 
         [Required]
         public string Password { get; set; }
+
+        [StringLength(100)]
+        public string FirstName { get; set; }
+
+        [StringLength(100)]
+        public string LastName { get; set; }
+
+        [StringLength(100)]
+        public string PhotoContentType { get; set; }
+
+        public byte[] PhotoData { get; set; }
     }
 }
